@@ -4,6 +4,7 @@ import { Menu, X, Moon, Sun, Volume2, VolumeX } from "lucide-react";
 
 const NAV = [
   { to: "/", label: "Home" },
+  { to: "/journal", label: "Journal" },
   { to: "/tribes", label: "Tribes" },
   { to: "/characters", label: "Dragons" },
   { to: "/abilities", label: "Abilities" },

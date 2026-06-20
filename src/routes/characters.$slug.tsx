@@ -3,6 +3,8 @@ import { getCharacter, CHARACTERS, TRIBES, type Character } from "@/lib/dragons"
 import { CanonBackdrop } from "@/components/CanonBackdrop";
 import { CHARACTER_ART } from "@/lib/character-art";
 import { Particles } from "@/components/Particles";
+import { ReadingFactPanels } from "@/components/ReadingFactPanels";
+import { getCharacterReadingFacts } from "@/lib/reading-facts";
 
 export const Route = createFileRoute("/characters/$slug")({
   loader: ({ params }): { character: Character } => {
@@ -32,6 +34,7 @@ function CharacterProfile() {
   const { character: c } = Route.useLoaderData() as { character: Character };
   const t = TRIBES.find((x) => x.slug === c.tribe)!;
   const characterArt = CHARACTER_ART[c.tribe];
+  const readingFacts = getCharacterReadingFacts(c, t);
 
   const power = 60 + ((c.slug.length * 13) % 40);
   const intel = 60 + ((c.name.length * 17) % 40);
@@ -125,6 +128,9 @@ function CharacterProfile() {
               </div>
             </div>
           ))}
+        </div>
+        <div className="mt-6">
+          <ReadingFactPanels title={`${c.name} Reading Notes`} panels={readingFacts} />
         </div>
       </section>
 

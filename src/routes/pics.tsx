@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight, Image, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart, Image, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import heroDragon from "@/assets/hero-dragon.jpg";
 import threeMoons from "@/assets/three-moons.jpg";
@@ -14,6 +14,7 @@ import underwaterPalace from "@/assets/gallery/dragon-underwater-palace.jpg";
 import volcanicIsland from "@/assets/gallery/dragon-volcanic-island.jpg";
 import { SCENES } from "@/lib/scenes";
 import { TRIBES, type TribeSlug } from "@/lib/dragons";
+import { trackJournalItem } from "@/lib/journal";
 
 export const Route = createFileRoute("/pics")({
   head: () => ({
@@ -34,6 +35,12 @@ type GalleryPic = {
   image: string;
   caption: string;
   type: "Featured" | "Tribe Scene" | "Dragon Vision";
+};
+
+type GalleryAlbum = {
+  title: string;
+  description: string;
+  pics: GalleryPic[];
 };
 
 const FEATURED_PICS: GalleryPic[] = [
@@ -133,9 +140,104 @@ const EXTRA_PICS: GalleryPic[] = [
 
 const GALLERY = [...FEATURED_PICS, ...TRIBE_PICS, ...EXTRA_PICS];
 
+const ALBUMS: GalleryAlbum[] = [
+  {
+    title: "Dragon Homelands",
+    description: "Kingdom scenes, tribe territories, and the places dragons call home.",
+    pics: TRIBE_PICS,
+  },
+  {
+    title: "Royal Dragons",
+    description:
+      "Palaces, strongholds, icy cliffs, and places where powerful dragon families gather.",
+    pics: [
+      FEATURED_PICS[0],
+      FEATURED_PICS[2],
+      TRIBE_PICS[4],
+      TRIBE_PICS[5],
+      TRIBE_PICS[3],
+      EXTRA_PICS[0],
+      EXTRA_PICS[1],
+      FEATURED_PICS[5],
+    ],
+  },
+  {
+    title: "Battle Skies",
+    description:
+      "High-flying scenes with storm clouds, lava light, desert wind, and fierce dragon energy.",
+    pics: [
+      TRIBE_PICS[1],
+      FEATURED_PICS[4],
+      FEATURED_PICS[5],
+      TRIBE_PICS[0],
+      TRIBE_PICS[6],
+      TRIBE_PICS[8],
+      FEATURED_PICS[0],
+      EXTRA_PICS[3],
+    ],
+  },
+  {
+    title: "Moonlit Magic",
+    description: "Night skies, glowing moons, auroras, mystery portals, and secret prophecy moods.",
+    pics: [
+      FEATURED_PICS[1],
+      TRIBE_PICS[0],
+      EXTRA_PICS[1],
+      FEATURED_PICS[3],
+      TRIBE_PICS[4],
+      EXTRA_PICS[3],
+      TRIBE_PICS[2],
+      FEATURED_PICS[4],
+    ],
+  },
+  {
+    title: "Pantala Legends",
+    description: "SilkWing gardens, HiveWing hives, LeafWing jungles, and glowing Pantala paths.",
+    pics: [
+      TRIBE_PICS[7],
+      TRIBE_PICS[8],
+      TRIBE_PICS[9],
+      EXTRA_PICS[4],
+      EXTRA_PICS[2],
+      FEATURED_PICS[2],
+      FEATURED_PICS[3],
+      FEATURED_PICS[0],
+    ],
+  },
+];
+
+const FAVORITE_PICS_KEY = "wof-pic-favs";
+
 function PicsPage() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [favoritePics, setFavoritePics] = useState<string[]>([]);
   const selected = selectedIndex == null ? null : GALLERY[selectedIndex];
+
+  const openPic = (pic: GalleryPic) => {
+    trackJournalItem("viewedPics", pic.title);
+    setSelectedIndex(GALLERY.indexOf(pic));
+  };
+
+  const toggleFavorite = (pic: GalleryPic) => {
+    setFavoritePics((current) => {
+      const next = current.includes(pic.title)
+        ? current.filter((title) => title !== pic.title)
+        : [...current, pic.title];
+      localStorage.setItem(FAVORITE_PICS_KEY, JSON.stringify(next));
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(FAVORITE_PICS_KEY) ?? "[]");
+      if (Array.isArray(saved)) {
+        setFavoritePics(saved.filter((item): item is string => typeof item === "string"));
+      }
+    } catch (error) {
+      console.warn("Unable to load favorite pictures.", error);
+    }
+  }, []);
 
   useEffect(() => {
     if (selectedIndex == null) return;
@@ -171,33 +273,32 @@ function PicsPage() {
           </div>
           <h1 className="font-display text-4xl font-black sm:text-6xl">Pics</h1>
           <p className="mt-3 max-w-2xl text-base text-white/65">
-            Tap any picture to open it large. No links, no extra pages, just dragon-world images.
+            Tap any picture to open it large. Heart your favorites to build a tiny dragon art
+            collection.
           </p>
         </div>
 
-        <GalleryRow
-          title="Featured Pics"
-          pics={FEATURED_PICS}
-          onSelect={(pic) => setSelectedIndex(GALLERY.indexOf(pic))}
-        />
-        <GalleryRow
-          title="Dragon Homelands"
-          pics={TRIBE_PICS.slice(0, 8)}
-          onSelect={(pic) => setSelectedIndex(GALLERY.indexOf(pic))}
-        />
-        <GalleryRow
-          title="More Kingdom Scenes"
-          pics={[...TRIBE_PICS.slice(8), ...EXTRA_PICS]}
-          onSelect={(pic) => setSelectedIndex(GALLERY.indexOf(pic))}
-        />
+        <FavoriteShelf favoritePics={favoritePics} onSelect={openPic} onFavorite={toggleFavorite} />
+
+        {ALBUMS.map((album) => (
+          <GalleryRow
+            key={album.title}
+            album={album}
+            favoritePics={favoritePics}
+            onSelect={openPic}
+            onFavorite={toggleFavorite}
+          />
+        ))}
       </section>
 
       {selectedIndex != null && selected && (
         <ImageViewer
           pic={selected}
+          isFavorite={favoritePics.includes(selected.title)}
           onClose={() => setSelectedIndex(null)}
           onNext={() => setSelectedIndex((selectedIndex + 1) % GALLERY.length)}
           onPrevious={() => setSelectedIndex((selectedIndex - 1 + GALLERY.length) % GALLERY.length)}
+          onFavorite={() => toggleFavorite(selected)}
         />
       )}
     </div>
@@ -205,15 +306,18 @@ function PicsPage() {
 }
 
 function GalleryRow({
-  title,
-  pics,
+  album,
+  favoritePics,
   onSelect,
+  onFavorite,
 }: {
-  title: string;
-  pics: GalleryPic[];
+  album: GalleryAlbum;
+  favoritePics: string[];
   onSelect: (pic: GalleryPic) => void;
+  onFavorite: (pic: GalleryPic) => void;
 }) {
   const [start, setStart] = useState(0);
+  const { title, description, pics } = album;
 
   if (pics.length === 0) return null;
 
@@ -228,7 +332,10 @@ function GalleryRow({
   return (
     <section className="mb-12">
       <div className="mb-4 flex items-center justify-between gap-4">
-        <h2 className="text-2xl font-black tracking-tight text-white/90">{title}</h2>
+        <div>
+          <h2 className="text-2xl font-black tracking-tight text-white/90">{title}</h2>
+          <p className="mt-1 max-w-3xl text-sm font-medium text-white/45">{description}</p>
+        </div>
         {canScroll && (
           <div className="flex items-center gap-2">
             <ArrowButton label={`Previous ${title}`} onClick={previous} direction="left" />
@@ -251,35 +358,119 @@ function GalleryRow({
         )}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {visiblePics.map((pic) => (
-            <button
+            <div
               key={`${title}-${pic.title}`}
-              type="button"
-              onClick={() => onSelect(pic)}
-              className="group relative overflow-hidden rounded-lg bg-white/5 text-left shadow-[0_10px_30px_rgba(0,0,0,.35)] outline-none ring-1 ring-white/10 transition duration-300 hover:z-10 hover:scale-[1.035] hover:ring-white/35 focus-visible:ring-2 focus-visible:ring-white"
+              className="group relative overflow-hidden rounded-lg bg-white/5 text-left shadow-[0_10px_30px_rgba(0,0,0,.35)] ring-1 ring-white/10 transition duration-300 hover:z-10 hover:scale-[1.035] hover:ring-white/35"
             >
-              <div className="aspect-video overflow-hidden">
-                <img
-                  src={pic.image}
-                  alt={pic.title}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                />
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent opacity-90" />
-              <div className="absolute inset-x-0 bottom-0 p-4">
-                <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/60">
-                  {pic.type}
+              <button
+                type="button"
+                onClick={() => onSelect(pic)}
+                className="block w-full text-left outline-none focus-visible:ring-2 focus-visible:ring-white"
+              >
+                <div className="aspect-video overflow-hidden">
+                  <img
+                    src={pic.image}
+                    alt={pic.title}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  />
                 </div>
-                <div className="mt-1 truncate font-display text-xl font-black text-white">
-                  {pic.title}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent opacity-90" />
+                <div className="absolute inset-x-0 bottom-0 p-4 pr-14">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/60">
+                    {pic.type}
+                  </div>
+                  <div className="mt-1 truncate font-display text-xl font-black text-white">
+                    {pic.title}
+                  </div>
+                  <p className="mt-1 line-clamp-1 text-xs font-medium text-white/70">
+                    {pic.caption}
+                  </p>
                 </div>
-                <p className="mt-1 line-clamp-1 text-xs font-medium text-white/70">{pic.caption}</p>
-              </div>
-            </button>
+              </button>
+              <FavoriteButton
+                active={favoritePics.includes(pic.title)}
+                label={`${favoritePics.includes(pic.title) ? "Remove" : "Add"} ${pic.title} favorite`}
+                onClick={() => onFavorite(pic)}
+                className="absolute bottom-4 right-4 z-10"
+              />
+            </div>
           ))}
         </div>
       </div>
     </section>
+  );
+}
+
+function FavoriteShelf({
+  favoritePics,
+  onSelect,
+  onFavorite,
+}: {
+  favoritePics: string[];
+  onSelect: (pic: GalleryPic) => void;
+  onFavorite: (pic: GalleryPic) => void;
+}) {
+  const pics = favoritePics
+    .map((title) => GALLERY.find((pic) => pic.title === title))
+    .filter((pic): pic is GalleryPic => Boolean(pic));
+
+  if (pics.length === 0) {
+    return (
+      <section className="mb-12 rounded-lg border border-white/10 bg-white/[0.04] p-5">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-black tracking-tight text-white/90">My Favorite Pics</h2>
+            <p className="mt-1 text-sm font-medium text-white/45">
+              Tap the hearts on any album card to start a collectible gallery shelf.
+            </p>
+          </div>
+          <div className="grid h-11 w-11 place-items-center rounded-full bg-white/10 text-white/70">
+            <Heart className="h-5 w-5" />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <GalleryRow
+      album={{
+        title: "My Favorite Pics",
+        description: "A personal shelf of dragon scenes marked as favorites.",
+        pics,
+      }}
+      favoritePics={favoritePics}
+      onSelect={onSelect}
+      onFavorite={onFavorite}
+    />
+  );
+}
+
+function FavoriteButton({
+  active,
+  label,
+  onClick,
+  className = "",
+}: {
+  active: boolean;
+  label: string;
+  onClick: () => void;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={(event) => {
+        event.stopPropagation();
+        onClick();
+      }}
+      className={`grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-black/45 text-white shadow-lg backdrop-blur transition hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${className}`}
+      aria-label={label}
+      aria-pressed={active}
+    >
+      <Heart className={`h-5 w-5 ${active ? "fill-rose-400 text-rose-400" : ""}`} />
+    </button>
   );
 }
 
@@ -312,14 +503,18 @@ function ArrowButton({
 
 function ImageViewer({
   pic,
+  isFavorite,
   onClose,
   onPrevious,
   onNext,
+  onFavorite,
 }: {
   pic: GalleryPic;
+  isFavorite: boolean;
   onClose: () => void;
   onPrevious: () => void;
   onNext: () => void;
+  onFavorite: () => void;
 }) {
   return (
     <div
@@ -337,6 +532,13 @@ function ImageViewer({
       >
         <X className="h-5 w-5" />
       </button>
+
+      <FavoriteButton
+        active={isFavorite}
+        label={`${isFavorite ? "Remove" : "Add"} ${pic.title} favorite`}
+        onClick={onFavorite}
+        className="absolute right-20 top-5 z-10 h-11 w-11 bg-white/10"
+      />
 
       <button
         type="button"

@@ -3,7 +3,11 @@ import { CHARACTERS, getTribe, type Tribe } from "@/lib/dragons";
 import { SCENES } from "@/lib/scenes";
 import { CHARACTER_ART } from "@/lib/character-art";
 import { Particles } from "@/components/Particles";
+import { trackJournalItem } from "@/lib/journal";
 import mudwingFamily from "@/assets/fan/mudwing-family.jpg";
+import { useEffect } from "react";
+import { ReadingFactPanels } from "@/components/ReadingFactPanels";
+import { getTribeReadingFacts } from "@/lib/reading-facts";
 
 export const Route = createFileRoute("/tribes/$slug")({
   loader: ({ params }): { tribe: Tribe } => {
@@ -36,6 +40,11 @@ function TribePage() {
   const { tribe } = Route.useLoaderData() as { tribe: Tribe };
   const famous = CHARACTERS.filter((c) => c.tribe === tribe.slug);
   const scene = SCENES[tribe.slug];
+  const readingFacts = getTribeReadingFacts(tribe);
+
+  useEffect(() => {
+    trackJournalItem("visitedTribes", tribe.slug);
+  }, [tribe.slug]);
 
   return (
     <div>
@@ -164,6 +173,8 @@ function TribePage() {
             </ul>
           </div>
         </div>
+
+        <ReadingFactPanels panels={readingFacts} />
 
         {tribe.slug === "mudwing" && (
           <section className="overflow-hidden rounded-3xl border border-border/60 bg-card shadow-magic">

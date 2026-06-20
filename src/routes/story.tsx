@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { TRIBES, type TribeSlug } from "@/lib/dragons";
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
+import { trackStory } from "@/lib/journal";
 
 export const Route = createFileRoute("/story")({
   head: () => ({
@@ -72,6 +73,7 @@ function StoryPage() {
         items: ["Star compass", "Ember scale", "Whispering leaf", "Tide pearl"].slice(0, 3),
       };
       setStory(s);
+      trackStory({ title: s.title, tribe: t.name, theme });
       setLoading(false);
     }, 900);
   };

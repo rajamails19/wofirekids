@@ -255,6 +255,15 @@
     box-shadow: 0 0 50px oklch(0.7 0.2 60 / 0.6);
   }
 }
+@keyframes companion-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(1.5deg);
+  }
+}
 
 .animate-float-slow {
   animation: float-slow 6s ease-in-out infinite;
@@ -270,6 +279,9 @@
 }
 .animate-pulse-glow {
   animation: pulse-glow 3s ease-in-out infinite;
+}
+.dragon-companion-float {
+  animation: companion-float 4s ease-in-out infinite;
 }
 
 .card-tilt {

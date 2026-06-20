@@ -17,6 +17,7 @@ import { Route as PicsRouteImport } from './routes/pics'
 import { Route as ParentsRouteImport } from './routes/parents'
 import { Route as MoonsRouteImport } from './routes/moons'
 import { Route as MapRouteImport } from './routes/map'
+import { Route as JournalRouteImport } from './routes/journal'
 import { Route as FactsRouteImport } from './routes/facts'
 import { Route as CharactersRouteImport } from './routes/characters'
 import { Route as CardsRouteImport } from './routes/cards'
@@ -66,6 +67,11 @@ const MoonsRoute = MoonsRouteImport.update({
 const MapRoute = MapRouteImport.update({
   id: '/map',
   path: '/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JournalRoute = JournalRouteImport.update({
+  id: '/journal',
+  path: '/journal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FactsRoute = FactsRouteImport.update({
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/cards': typeof CardsRoute
   '/characters': typeof CharactersRouteWithChildren
   '/facts': typeof FactsRoute
+  '/journal': typeof JournalRoute
   '/map': typeof MapRoute
   '/moons': typeof MoonsRoute
   '/parents': typeof ParentsRoute
@@ -148,6 +155,7 @@ export interface FileRoutesByTo {
   '/cards': typeof CardsRoute
   '/characters': typeof CharactersRouteWithChildren
   '/facts': typeof FactsRoute
+  '/journal': typeof JournalRoute
   '/map': typeof MapRoute
   '/moons': typeof MoonsRoute
   '/parents': typeof ParentsRoute
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/cards': typeof CardsRoute
   '/characters': typeof CharactersRouteWithChildren
   '/facts': typeof FactsRoute
+  '/journal': typeof JournalRoute
   '/map': typeof MapRoute
   '/moons': typeof MoonsRoute
   '/parents': typeof ParentsRoute
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/cards'
     | '/characters'
     | '/facts'
+    | '/journal'
     | '/map'
     | '/moons'
     | '/parents'
@@ -211,6 +221,7 @@ export interface FileRouteTypes {
     | '/cards'
     | '/characters'
     | '/facts'
+    | '/journal'
     | '/map'
     | '/moons'
     | '/parents'
@@ -231,6 +242,7 @@ export interface FileRouteTypes {
     | '/cards'
     | '/characters'
     | '/facts'
+    | '/journal'
     | '/map'
     | '/moons'
     | '/parents'
@@ -252,6 +264,7 @@ export interface RootRouteChildren {
   CardsRoute: typeof CardsRoute
   CharactersRoute: typeof CharactersRouteWithChildren
   FactsRoute: typeof FactsRoute
+  JournalRoute: typeof JournalRoute
   MapRoute: typeof MapRoute
   MoonsRoute: typeof MoonsRoute
   ParentsRoute: typeof ParentsRoute
@@ -318,6 +331,13 @@ declare module '@tanstack/react-router' {
       path: '/map'
       fullPath: '/map'
       preLoaderRoute: typeof MapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/journal': {
+      id: '/journal'
+      path: '/journal'
+      fullPath: '/journal'
+      preLoaderRoute: typeof JournalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/facts': {
@@ -425,6 +445,7 @@ const rootRouteChildren: RootRouteChildren = {
   CardsRoute: CardsRoute,
   CharactersRoute: CharactersRouteWithChildren,
   FactsRoute: FactsRoute,
+  JournalRoute: JournalRoute,
   MapRoute: MapRoute,
   MoonsRoute: MoonsRoute,
   ParentsRoute: ParentsRoute,

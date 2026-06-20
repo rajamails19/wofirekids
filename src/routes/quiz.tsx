@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { TRIBES, type TribeSlug } from "@/lib/dragons";
 import { useState } from "react";
+import { trackQuizResult } from "@/lib/journal";
 
 export const Route = createFileRoute("/quiz")({
   head: () => ({
@@ -123,8 +124,14 @@ function QuizPage() {
   const choose = (tribe: TribeSlug) => {
     const next = { ...scores, [tribe]: (scores[tribe] ?? 0) + 1 };
     setScores(next);
-    if (step + 1 >= QUESTIONS.length) setDone(true);
-    else setStep(step + 1);
+    if (step + 1 >= QUESTIONS.length) {
+      const winner = Object.entries(next).sort((a, b) => b[1] - a[1])[0]?.[0] as
+        | TribeSlug
+        | undefined;
+      const resultTribe = TRIBES.find((t) => t.slug === winner) ?? TRIBES[0];
+      trackQuizResult({ tribe: resultTribe.slug, tribeName: resultTribe.name });
+      setDone(true);
+    } else setStep(step + 1);
   };
 
   const reset = () => {
