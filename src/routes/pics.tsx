@@ -5,6 +5,13 @@ import heroDragon from "@/assets/hero-dragon.jpg";
 import threeMoons from "@/assets/three-moons.jpg";
 import worldMap from "@/assets/world-map.jpg";
 import portalStory from "@/assets/portal-story.jpg";
+import desertFortress from "@/assets/gallery/dragon-desert-fortress.jpg";
+import frozenAurora from "@/assets/gallery/dragon-frozen-aurora.jpg";
+import rainforestCanopy from "@/assets/gallery/dragon-rainforest-canopy.jpg";
+import silkGarden from "@/assets/gallery/dragon-silk-garden.jpg";
+import swampFireflies from "@/assets/gallery/dragon-swamp-fireflies.jpg";
+import underwaterPalace from "@/assets/gallery/dragon-underwater-palace.jpg";
+import volcanicIsland from "@/assets/gallery/dragon-volcanic-island.jpg";
 import { SCENES } from "@/lib/scenes";
 import { TRIBES, type TribeSlug } from "@/lib/dragons";
 
@@ -26,7 +33,7 @@ type GalleryPic = {
   title: string;
   image: string;
   caption: string;
-  type: "Featured" | "Tribe Scene";
+  type: "Featured" | "Tribe Scene" | "Dragon Vision";
 };
 
 const FEATURED_PICS: GalleryPic[] = [
@@ -54,6 +61,18 @@ const FEATURED_PICS: GalleryPic[] = [
     caption: "A doorway into dragon adventure.",
     type: "Featured",
   },
+  {
+    title: "Volcanic Starflight",
+    image: volcanicIsland,
+    caption: "A shadow-winged dragon over lava-lit cliffs.",
+    type: "Dragon Vision",
+  },
+  {
+    title: "Desert Stronghold",
+    image: desertFortress,
+    caption: "Sunlit dunes, sandstone towers, and a desert dragon.",
+    type: "Dragon Vision",
+  },
 ];
 
 const FEATURED_TRIBES: TribeSlug[] = [
@@ -79,7 +98,40 @@ const TRIBE_PICS: GalleryPic[] = FEATURED_TRIBES.map((slug) => {
   };
 });
 
-const GALLERY = [...FEATURED_PICS, ...TRIBE_PICS];
+const EXTRA_PICS: GalleryPic[] = [
+  {
+    title: "Undersea Palace",
+    image: underwaterPalace,
+    caption: "Coral towers glowing beneath a blue-green dragon sea.",
+    type: "Dragon Vision",
+  },
+  {
+    title: "Aurora Ice Cliffs",
+    image: frozenAurora,
+    caption: "A pale ice dragon watching the northern lights.",
+    type: "Dragon Vision",
+  },
+  {
+    title: "Rainforest Canopy",
+    image: rainforestCanopy,
+    caption: "Colorful scales hidden among flowers and waterfalls.",
+    type: "Dragon Vision",
+  },
+  {
+    title: "Swamp Fireflies",
+    image: swampFireflies,
+    caption: "A sturdy marsh dragon in the twilight wetlands.",
+    type: "Dragon Vision",
+  },
+  {
+    title: "Silk Garden",
+    image: silkGarden,
+    caption: "Lantern trees and silk threads under a pink sky.",
+    type: "Dragon Vision",
+  },
+];
+
+const GALLERY = [...FEATURED_PICS, ...TRIBE_PICS, ...EXTRA_PICS];
 
 function PicsPage() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -135,7 +187,7 @@ function PicsPage() {
         />
         <GalleryRow
           title="More Kingdom Scenes"
-          pics={TRIBE_PICS.slice(8)}
+          pics={[...TRIBE_PICS.slice(8), ...EXTRA_PICS]}
           onSelect={(pic) => setSelectedIndex(GALLERY.indexOf(pic))}
         />
       </section>
