@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Image, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Image, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import heroDragon from "@/assets/hero-dragon.jpg";
 import threeMoons from "@/assets/three-moons.jpg";
@@ -82,13 +82,22 @@ const TRIBE_PICS: GalleryPic[] = FEATURED_TRIBES.map((slug) => {
 const GALLERY = [...FEATURED_PICS, ...TRIBE_PICS];
 
 function PicsPage() {
-  const [selected, setSelected] = useState<GalleryPic | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const selected = selectedIndex == null ? null : GALLERY[selectedIndex];
 
   useEffect(() => {
-    if (!selected) return;
+    if (selectedIndex == null) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSelected(null);
+      if (event.key === "Escape") setSelectedIndex(null);
+      if (event.key === "ArrowLeft") {
+        setSelectedIndex((current) =>
+          current == null ? current : (current - 1 + GALLERY.length) % GALLERY.length,
+        );
+      }
+      if (event.key === "ArrowRight") {
+        setSelectedIndex((current) => (current == null ? current : (current + 1) % GALLERY.length));
+      }
     };
 
     document.body.style.overflow = "hidden";
@@ -98,7 +107,7 @@ function PicsPage() {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [selected]);
+  }, [selectedIndex]);
 
   return (
     <div className="min-h-screen bg-[#090909] text-white">
@@ -114,12 +123,31 @@ function PicsPage() {
           </p>
         </div>
 
-        <GalleryRow title="Featured Pics" pics={FEATURED_PICS} onSelect={setSelected} />
-        <GalleryRow title="Dragon Homelands" pics={TRIBE_PICS.slice(0, 8)} onSelect={setSelected} />
-        <GalleryRow title="More Kingdom Scenes" pics={TRIBE_PICS.slice(8)} onSelect={setSelected} />
+        <GalleryRow
+          title="Featured Pics"
+          pics={FEATURED_PICS}
+          onSelect={(pic) => setSelectedIndex(GALLERY.indexOf(pic))}
+        />
+        <GalleryRow
+          title="Dragon Homelands"
+          pics={TRIBE_PICS.slice(0, 8)}
+          onSelect={(pic) => setSelectedIndex(GALLERY.indexOf(pic))}
+        />
+        <GalleryRow
+          title="More Kingdom Scenes"
+          pics={TRIBE_PICS.slice(8)}
+          onSelect={(pic) => setSelectedIndex(GALLERY.indexOf(pic))}
+        />
       </section>
 
-      {selected && <ImageViewer pic={selected} onClose={() => setSelected(null)} />}
+      {selectedIndex != null && selected && (
+        <ImageViewer
+          pic={selected}
+          onClose={() => setSelectedIndex(null)}
+          onNext={() => setSelectedIndex((selectedIndex + 1) % GALLERY.length)}
+          onPrevious={() => setSelectedIndex((selectedIndex - 1 + GALLERY.length) % GALLERY.length)}
+        />
+      )}
     </div>
   );
 }
@@ -133,45 +161,114 @@ function GalleryRow({
   pics: GalleryPic[];
   onSelect: (pic: GalleryPic) => void;
 }) {
+  const [start, setStart] = useState(0);
+
   if (pics.length === 0) return null;
+
+  const canScroll = pics.length > 4;
+  const visiblePics = canScroll
+    ? Array.from({ length: 4 }, (_, i) => pics[(start + i) % pics.length])
+    : pics;
+
+  const previous = () => setStart((current) => (current - 4 + pics.length) % pics.length);
+  const next = () => setStart((current) => (current + 4) % pics.length);
 
   return (
     <section className="mb-12">
-      <h2 className="mb-4 text-2xl font-black tracking-tight text-white/90">{title}</h2>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {pics.map((pic) => (
-          <button
-            key={`${title}-${pic.title}`}
-            type="button"
-            onClick={() => onSelect(pic)}
-            className="group relative overflow-hidden rounded-lg bg-white/5 text-left shadow-[0_10px_30px_rgba(0,0,0,.35)] outline-none ring-1 ring-white/10 transition duration-300 hover:z-10 hover:scale-[1.035] hover:ring-white/35 focus-visible:ring-2 focus-visible:ring-white"
-          >
-            <div className="aspect-video overflow-hidden">
-              <img
-                src={pic.image}
-                alt={pic.title}
-                loading="lazy"
-                className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-              />
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <h2 className="text-2xl font-black tracking-tight text-white/90">{title}</h2>
+        {canScroll && (
+          <div className="flex items-center gap-2">
+            <ArrowButton label={`Previous ${title}`} onClick={previous} direction="left" />
+            <ArrowButton label={`Next ${title}`} onClick={next} direction="right" />
+          </div>
+        )}
+      </div>
+      <div className="relative">
+        {canScroll && (
+          <>
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-[#090909] to-transparent" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-[#090909] to-transparent" />
+            <div className="absolute inset-y-0 left-0 z-20 hidden items-center lg:flex">
+              <ArrowButton label={`Previous ${title}`} onClick={previous} direction="left" large />
             </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent opacity-90" />
-            <div className="absolute inset-x-0 bottom-0 p-4">
-              <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/60">
-                {pic.type}
-              </div>
-              <div className="mt-1 truncate font-display text-xl font-black text-white">
-                {pic.title}
-              </div>
-              <p className="mt-1 line-clamp-1 text-xs font-medium text-white/70">{pic.caption}</p>
+            <div className="absolute inset-y-0 right-0 z-20 hidden items-center lg:flex">
+              <ArrowButton label={`Next ${title}`} onClick={next} direction="right" large />
             </div>
-          </button>
-        ))}
+          </>
+        )}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {visiblePics.map((pic) => (
+            <button
+              key={`${title}-${pic.title}`}
+              type="button"
+              onClick={() => onSelect(pic)}
+              className="group relative overflow-hidden rounded-lg bg-white/5 text-left shadow-[0_10px_30px_rgba(0,0,0,.35)] outline-none ring-1 ring-white/10 transition duration-300 hover:z-10 hover:scale-[1.035] hover:ring-white/35 focus-visible:ring-2 focus-visible:ring-white"
+            >
+              <div className="aspect-video overflow-hidden">
+                <img
+                  src={pic.image}
+                  alt={pic.title}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent opacity-90" />
+              <div className="absolute inset-x-0 bottom-0 p-4">
+                <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/60">
+                  {pic.type}
+                </div>
+                <div className="mt-1 truncate font-display text-xl font-black text-white">
+                  {pic.title}
+                </div>
+                <p className="mt-1 line-clamp-1 text-xs font-medium text-white/70">{pic.caption}</p>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
-function ImageViewer({ pic, onClose }: { pic: GalleryPic; onClose: () => void }) {
+function ArrowButton({
+  label,
+  onClick,
+  direction,
+  large = false,
+}: {
+  label: string;
+  onClick: () => void;
+  direction: "left" | "right";
+  large?: boolean;
+}) {
+  const Icon = direction === "left" ? ChevronLeft : ChevronRight;
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`grid place-items-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
+        large ? "h-14 w-10" : "h-9 w-9"
+      }`}
+      aria-label={label}
+    >
+      <Icon className={large ? "h-7 w-7" : "h-5 w-5"} />
+    </button>
+  );
+}
+
+function ImageViewer({
+  pic,
+  onClose,
+  onPrevious,
+  onNext,
+}: {
+  pic: GalleryPic;
+  onClose: () => void;
+  onPrevious: () => void;
+  onNext: () => void;
+}) {
   return (
     <div
       className="fixed inset-0 z-[100] grid place-items-center bg-black/85 p-4 backdrop-blur-sm"
@@ -187,6 +284,30 @@ function ImageViewer({ pic, onClose }: { pic: GalleryPic; onClose: () => void })
         aria-label="Close image"
       >
         <X className="h-5 w-5" />
+      </button>
+
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          onPrevious();
+        }}
+        className="absolute left-4 top-1/2 z-10 grid h-20 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:left-8"
+        aria-label="Previous picture"
+      >
+        <ChevronLeft className="h-9 w-9" />
+      </button>
+
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          onNext();
+        }}
+        className="absolute right-4 top-1/2 z-10 grid h-20 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:right-8"
+        aria-label="Next picture"
+      >
+        <ChevronRight className="h-9 w-9" />
       </button>
 
       <div
