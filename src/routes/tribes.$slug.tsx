@@ -1,7 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { CHARACTERS, getTribe, type Tribe } from "@/lib/dragons";
 import { SCENES } from "@/lib/scenes";
+import { CHARACTER_ART } from "@/lib/character-art";
 import { Particles } from "@/components/Particles";
+import mudwingFamily from "@/assets/fan/mudwing-family.jpg";
 
 export const Route = createFileRoute("/tribes/$slug")({
   loader: ({ params }): { tribe: Tribe } => {
@@ -81,6 +83,12 @@ function TribePage() {
           <p className="mt-3 max-w-2xl text-lg font-medium opacity-95 drop-shadow sm:text-2xl">
             {tribe.tagline}
           </p>
+          {tribe.slug === "nightwing" && (
+            <p className="mt-3 max-w-xl text-xs italic text-white/75 drop-shadow sm:text-sm">
+              His world imagines five rainforest moons. (In the actual books, there are only 3
+              moons)
+            </p>
+          )}
         </div>
       </section>
 
@@ -157,6 +165,35 @@ function TribePage() {
           </div>
         </div>
 
+        {tribe.slug === "mudwing" && (
+          <section className="overflow-hidden rounded-3xl border border-border/60 bg-card shadow-magic">
+            <div className="grid gap-0 md:grid-cols-[1.25fr_.75fr]">
+              <div className="relative min-h-[320px]">
+                <img
+                  src={mudwingFamily}
+                  alt="MudWing sibling troop together in the marsh"
+                  className="absolute inset-0 h-full w-full object-cover"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:to-card/75" />
+              </div>
+              <div className="p-6 md:p-8">
+                <div className="text-xs font-bold uppercase tracking-[0.25em] text-accent">
+                  Entire Family
+                </div>
+                <h2 className="mt-2 font-display text-3xl font-black">
+                  The sibling troop stays together
+                </h2>
+                <p className="mt-4 leading-relaxed text-muted-foreground">
+                  MudWings hatch in big sibling groups called troops. The oldest bigwings watches
+                  over the younger dragons, and the whole family grows up side by side in the warm
+                  marshes.
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
+
         {famous.length > 0 && (
           <div>
             <h2 className="mb-4 font-display text-3xl font-bold">
@@ -171,12 +208,21 @@ function TribePage() {
                   className="group relative block overflow-hidden rounded-3xl shadow-magic ring-1 ring-white/10"
                   style={{ aspectRatio: "3 / 4" }}
                 >
-                  <img
-                    src={scene}
-                    alt=""
-                    className="scene-zoom absolute inset-0 h-full w-full object-cover"
-                    loading="lazy"
-                  />
+                  {CHARACTER_ART[c.tribe] ? (
+                    <img
+                      src={CHARACTER_ART[c.tribe]}
+                      alt=""
+                      className="scene-zoom absolute inset-0 h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <img
+                      src={scene}
+                      alt=""
+                      className="scene-zoom absolute inset-0 h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
                   <div className="absolute inset-x-0 bottom-0 p-5 text-white">
                     <div className="text-[10px] font-bold uppercase tracking-[0.25em] opacity-90">

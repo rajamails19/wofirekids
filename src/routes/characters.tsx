@@ -1,6 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { CHARACTERS, TRIBES, type TribeSlug } from "@/lib/dragons";
 import { CanonBackdrop } from "@/components/CanonBackdrop";
+import { CHARACTER_ART } from "@/lib/character-art";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/characters")({
 });
 
 function CharactersPage() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
   const [q, setQ] = useState("");
   const [tribe, setTribe] = useState<TribeSlug | "all">("all");
 
@@ -31,6 +33,8 @@ function CharactersPage() {
           c.role.toLowerCase().includes(q.toLowerCase())),
     );
   }, [q, tribe]);
+
+  if (pathname !== "/characters") return <Outlet />;
 
   return (
     <div className="mx-auto max-w-[1500px] px-4 py-12">
@@ -82,6 +86,7 @@ function CharactersPage() {
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((c, i) => {
             const t = TRIBES.find((x) => x.slug === c.tribe)!;
+            const characterArt = CHARACTER_ART[c.tribe];
             return (
               <Link
                 key={c.slug}
@@ -90,7 +95,16 @@ function CharactersPage() {
                 className="group relative block overflow-hidden rounded-[1.75rem] shadow-magic ring-1 ring-white/10 animate-fade-up"
                 style={{ aspectRatio: "3 / 4", animationDelay: `${i * 60}ms` }}
               >
-                <CanonBackdrop tribe={c.tribe} poster />
+                {characterArt ? (
+                  <img
+                    src={characterArt}
+                    alt=""
+                    className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                ) : (
+                  <CanonBackdrop tribe={c.tribe} poster />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/92 via-black/28 to-transparent" />
                 <div
                   className="absolute inset-0 opacity-50 mix-blend-soft-light"

@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getCharacter, CHARACTERS, TRIBES, type Character } from "@/lib/dragons";
 import { CanonBackdrop } from "@/components/CanonBackdrop";
+import { CHARACTER_ART } from "@/lib/character-art";
 import { Particles } from "@/components/Particles";
 
 export const Route = createFileRoute("/characters/$slug")({
@@ -30,6 +31,7 @@ export const Route = createFileRoute("/characters/$slug")({
 function CharacterProfile() {
   const { character: c } = Route.useLoaderData() as { character: Character };
   const t = TRIBES.find((x) => x.slug === c.tribe)!;
+  const characterArt = CHARACTER_ART[c.tribe];
 
   const power = 60 + ((c.slug.length * 13) % 40);
   const intel = 60 + ((c.name.length * 17) % 40);
@@ -48,7 +50,11 @@ function CharacterProfile() {
         className="relative isolate overflow-hidden"
         style={{ minHeight: "min(92vh, 880px)" }}
       >
-        <CanonBackdrop tribe={c.tribe} />
+        {characterArt ? (
+          <img src={characterArt} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        ) : (
+          <CanonBackdrop tribe={c.tribe} />
+        )}
         <div
           className="absolute inset-0 opacity-60 mix-blend-soft-light"
           style={{
@@ -77,6 +83,11 @@ function CharacterProfile() {
           <p className="mt-4 max-w-2xl text-lg font-medium opacity-95 drop-shadow sm:text-2xl">
             {c.bio}
           </p>
+          {c.tribe === "nightwing" && (
+            <p className="mt-3 max-w-xl text-xs italic text-white/75 drop-shadow sm:text-sm">
+              His NightWing skies may show five moons. (In the actual books, there are only 3 moons)
+            </p>
+          )}
           <div className="mt-6 flex flex-wrap gap-2">
             {c.powers.map((p) => (
               <span
@@ -123,7 +134,16 @@ function CharacterProfile() {
           className="relative overflow-hidden rounded-[2rem] shadow-magic ring-1 ring-white/10"
           style={{ aspectRatio: "16/8" }}
         >
-          <CanonBackdrop tribe={c.tribe} poster />
+          {characterArt ? (
+            <img
+              src={characterArt}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <CanonBackdrop tribe={c.tribe} poster />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
           <Particles count={18} />
           <div className="absolute bottom-0 left-0 p-6 text-white">

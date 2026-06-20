@@ -10,7 +10,7 @@ export const Route = createFileRoute("/map")({
       { title: "World Map — DragonHub" },
       {
         name: "description",
-        content: "Explore the seven dragon kingdoms on an interactive fantasy map.",
+        content: "Explore mystical dragon kingdoms on an interactive fantasy map.",
       },
     ],
   }),

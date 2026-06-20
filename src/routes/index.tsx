@@ -49,7 +49,7 @@ const PORTALS = [
   {
     to: "/map",
     title: "World Map",
-    whisper: "Fly across seven kingdoms",
+    whisper: "Fly across mystical kingdoms",
     img: portalMap,
     tint: "from-orange-500/40",
   },
@@ -106,8 +106,8 @@ function Home() {
             className="mt-6 max-w-2xl animate-fade-up text-base text-foreground/85 sm:text-lg"
             style={{ animationDelay: "120ms" }}
           >
-            Discover seven dragon tribes, explore mystical kingdoms, create your own dragon, and
-            embark on legendary adventures across a world of wonder.
+            Discover twelve mystical dragon tribes, explore magical kingdoms, create your own
+            dragon, and embark on legendary adventures across a world of wonder.
           </p>
           <div
             className="mt-9 flex flex-wrap items-center justify-center gap-3 animate-fade-up"
@@ -135,7 +135,11 @@ function Home() {
 
           <div className="mt-16 grid w-full max-w-3xl grid-cols-3 gap-3 sm:gap-6">
             {[
-              { n: "10", l: "Canon tribes" },
+              {
+                n: "12",
+                l: "Mystical tribes",
+                note: "In the actual books, there are 10 tribes — 7 in Pyrrhia, 3 in Pantala",
+              },
               { n: "2", l: "Continents" },
               { n: "3", l: "Moons" },
             ].map((s) => (
@@ -149,6 +153,11 @@ function Home() {
                 <div className="mt-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {s.l}
                 </div>
+                {"note" in s && (
+                  <div className="mt-2 text-[10px] italic leading-snug text-muted-foreground/75">
+                    ({s.note})
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -158,9 +167,10 @@ function Home() {
       {/* CHOOSE YOUR DESTINY — horizontal cinematic journey */}
       <section className="relative py-20">
         <SectionHeader
-          eyebrow="The Ten Canon Tribes"
+          eyebrow="12 Mystical Tribes"
           title="Choose Your Dragon"
-          subtitle="Seven tribes of Pyrrhia. Three tribes of Pantala. Which one is yours?"
+          subtitle="His dragon world has two extra mystery tribes waiting in the clouds. Which one is yours?"
+          note="In the actual books, there are 10 tribes — 7 in Pyrrhia, 3 in Pantala"
         />
 
         <div className="mt-12">
@@ -309,10 +319,12 @@ function SectionHeader({
   eyebrow,
   title,
   subtitle,
+  note,
 }: {
   eyebrow: string;
   title: string;
   subtitle?: string;
+  note?: string;
 }) {
   return (
     <div className="mx-auto max-w-2xl px-4 text-center">
@@ -321,6 +333,7 @@ function SectionHeader({
         <span className="text-gradient-magic">{title}</span>
       </h2>
       {subtitle && <p className="mt-4 text-muted-foreground">{subtitle}</p>}
+      {note && <p className="mt-2 text-xs italic text-muted-foreground/75">({note})</p>}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { TRIBES } from "@/lib/dragons";
 import { SCENES } from "@/lib/scenes";
 import { Particles } from "@/components/Particles";
@@ -10,7 +10,7 @@ export const Route = createFileRoute("/tribes")({
       {
         name: "description",
         content:
-          "Step into the seven dragon kingdoms — explore cinematic homelands of NightWings, SkyWings, RainWings, SeaWings, IceWings, SandWings, and MudWings.",
+          "Step into a kid-imagined dragon world of twelve mystical tribes, with the ten existing tribe doorways shown for now.",
       },
     ],
   }),
@@ -18,6 +18,10 @@ export const Route = createFileRoute("/tribes")({
 });
 
 function TribesPage() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
+  if (pathname !== "/tribes") return <Outlet />;
+
   return (
     <div className="relative">
       {/* Intro */}
@@ -26,10 +30,13 @@ function TribesPage() {
           Codex of Tribes
         </div>
         <h1 className="font-display text-4xl font-black sm:text-6xl">
-          <span className="text-gradient-magic">Seven Worlds. Seven Dragons.</span>
+          <span className="text-gradient-magic">Twelve Mystical Tribes</span>
         </h1>
-        <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-          Glide between kingdoms. Each scene is a doorway — step closer to enter.
+        <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
+          Glide between the known tribe doorways while two mystery tribes wait to be imagined.
+        </p>
+        <p className="mx-auto mt-2 max-w-2xl text-xs italic text-muted-foreground/75">
+          (In the actual books, there are 10 tribes — 7 in Pyrrhia, 3 in Pantala)
         </p>
       </section>
 
@@ -75,7 +82,7 @@ function TribesPage() {
               <div className="flex items-end justify-between gap-6">
                 <div className="min-w-0">
                   <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.25em] backdrop-blur">
-                    <span>{t.emoji}</span> Kingdom {i + 1} / 7
+                    <span>{t.emoji}</span> Known Tribe {i + 1} / 10
                   </div>
                   <h2 className="font-display text-4xl font-black drop-shadow-[0_4px_24px_rgba(0,0,0,0.6)] sm:text-6xl md:text-7xl">
                     {t.name}
