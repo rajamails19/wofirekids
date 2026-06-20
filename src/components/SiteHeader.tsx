@@ -7,6 +7,8 @@ const NAV = [
   { to: "/tribes", label: "Tribes" },
   { to: "/characters", label: "Dragons" },
   { to: "/abilities", label: "Abilities" },
+  { to: "/facts", label: "Facts" },
+  { to: "/pics", label: "Pics" },
   { to: "/moons", label: "Three Moons" },
   { to: "/map", label: "Map" },
   { to: "/builder", label: "Create" },

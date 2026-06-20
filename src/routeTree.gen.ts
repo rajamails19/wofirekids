@@ -13,9 +13,11 @@ import { Route as TribesRouteImport } from './routes/tribes'
 import { Route as StoryRouteImport } from './routes/story'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as QuizRouteImport } from './routes/quiz'
+import { Route as PicsRouteImport } from './routes/pics'
 import { Route as ParentsRouteImport } from './routes/parents'
 import { Route as MoonsRouteImport } from './routes/moons'
 import { Route as MapRouteImport } from './routes/map'
+import { Route as FactsRouteImport } from './routes/facts'
 import { Route as CharactersRouteImport } from './routes/characters'
 import { Route as CardsRouteImport } from './routes/cards'
 import { Route as BuilderRouteImport } from './routes/builder'
@@ -46,6 +48,11 @@ const QuizRoute = QuizRouteImport.update({
   path: '/quiz',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PicsRoute = PicsRouteImport.update({
+  id: '/pics',
+  path: '/pics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ParentsRoute = ParentsRouteImport.update({
   id: '/parents',
   path: '/parents',
@@ -59,6 +66,11 @@ const MoonsRoute = MoonsRouteImport.update({
 const MapRoute = MapRouteImport.update({
   id: '/map',
   path: '/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FactsRoute = FactsRouteImport.update({
+  id: '/facts',
+  path: '/facts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CharactersRoute = CharactersRouteImport.update({
@@ -115,9 +127,11 @@ export interface FileRoutesByFullPath {
   '/builder': typeof BuilderRoute
   '/cards': typeof CardsRoute
   '/characters': typeof CharactersRouteWithChildren
+  '/facts': typeof FactsRoute
   '/map': typeof MapRoute
   '/moons': typeof MoonsRoute
   '/parents': typeof ParentsRoute
+  '/pics': typeof PicsRoute
   '/quiz': typeof QuizRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/story': typeof StoryRoute
@@ -133,9 +147,11 @@ export interface FileRoutesByTo {
   '/builder': typeof BuilderRoute
   '/cards': typeof CardsRoute
   '/characters': typeof CharactersRouteWithChildren
+  '/facts': typeof FactsRoute
   '/map': typeof MapRoute
   '/moons': typeof MoonsRoute
   '/parents': typeof ParentsRoute
+  '/pics': typeof PicsRoute
   '/quiz': typeof QuizRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/story': typeof StoryRoute
@@ -152,9 +168,11 @@ export interface FileRoutesById {
   '/builder': typeof BuilderRoute
   '/cards': typeof CardsRoute
   '/characters': typeof CharactersRouteWithChildren
+  '/facts': typeof FactsRoute
   '/map': typeof MapRoute
   '/moons': typeof MoonsRoute
   '/parents': typeof ParentsRoute
+  '/pics': typeof PicsRoute
   '/quiz': typeof QuizRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/story': typeof StoryRoute
@@ -172,9 +190,11 @@ export interface FileRouteTypes {
     | '/builder'
     | '/cards'
     | '/characters'
+    | '/facts'
     | '/map'
     | '/moons'
     | '/parents'
+    | '/pics'
     | '/quiz'
     | '/sitemap.xml'
     | '/story'
@@ -190,9 +210,11 @@ export interface FileRouteTypes {
     | '/builder'
     | '/cards'
     | '/characters'
+    | '/facts'
     | '/map'
     | '/moons'
     | '/parents'
+    | '/pics'
     | '/quiz'
     | '/sitemap.xml'
     | '/story'
@@ -208,9 +230,11 @@ export interface FileRouteTypes {
     | '/builder'
     | '/cards'
     | '/characters'
+    | '/facts'
     | '/map'
     | '/moons'
     | '/parents'
+    | '/pics'
     | '/quiz'
     | '/sitemap.xml'
     | '/story'
@@ -227,9 +251,11 @@ export interface RootRouteChildren {
   BuilderRoute: typeof BuilderRoute
   CardsRoute: typeof CardsRoute
   CharactersRoute: typeof CharactersRouteWithChildren
+  FactsRoute: typeof FactsRoute
   MapRoute: typeof MapRoute
   MoonsRoute: typeof MoonsRoute
   ParentsRoute: typeof ParentsRoute
+  PicsRoute: typeof PicsRoute
   QuizRoute: typeof QuizRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StoryRoute: typeof StoryRoute
@@ -266,6 +292,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuizRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pics': {
+      id: '/pics'
+      path: '/pics'
+      fullPath: '/pics'
+      preLoaderRoute: typeof PicsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/parents': {
       id: '/parents'
       path: '/parents'
@@ -285,6 +318,13 @@ declare module '@tanstack/react-router' {
       path: '/map'
       fullPath: '/map'
       preLoaderRoute: typeof MapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/facts': {
+      id: '/facts'
+      path: '/facts'
+      fullPath: '/facts'
+      preLoaderRoute: typeof FactsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/characters': {
@@ -384,9 +424,11 @@ const rootRouteChildren: RootRouteChildren = {
   BuilderRoute: BuilderRoute,
   CardsRoute: CardsRoute,
   CharactersRoute: CharactersRouteWithChildren,
+  FactsRoute: FactsRoute,
   MapRoute: MapRoute,
   MoonsRoute: MoonsRoute,
   ParentsRoute: ParentsRoute,
+  PicsRoute: PicsRoute,
   QuizRoute: QuizRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StoryRoute: StoryRoute,

@@ -7,6 +7,8 @@ const PATHS = [
   "/",
   "/tribes",
   "/characters",
+  "/facts",
+  "/pics",
   "/map",
   "/builder",
   "/quiz",

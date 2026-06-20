@@ -48,17 +48,17 @@ export const TRIBES: Tribe[] = [
       "Brown and amber dragons of the marshes. MudWings hatch in groups called troops, led by the firstborn 'bigwings' — the strongest and most protective sibling.",
     habitat: "The wetlands and mud kingdom east of the Diamond Spray River",
     abilities: [
-      "Fire breath (only if warmed in the sun first)",
-      "Fireproof scales when blood is hot",
-      "Powerful jaws and great strength",
-      "Holding breath underwater for an hour",
+      "Fireproof scales (immune to fire, including their own and others')",
+      "Can hold breath underwater for a long time",
+      "Exceptional strength and stamina",
+      "Strong sense of smell, second only to SeaWings",
     ],
     personality: ["Loyal", "Steady", "Protective", "Family-first"],
     history:
       "MudWings are raised together by their bigwings sibling. Queen Moorhen rules the Mud Kingdom from her stronghold in the marshes.",
     funFacts: [
       "Bigwings have a slight golden gleam on their wing membranes.",
-      "Cold MudWings can't breathe fire — they must bask first.",
+      "MudWings rely on strength, stamina, and fireproof scales instead of elemental breath.",
       "Troops share everything: food, sleeping nests, and battles.",
     ],
     emoji: "🪨",
@@ -207,10 +207,7 @@ export const TRIBES: Tribe[] = [
     abilities: [
       "Fire breath",
       "Hidden in darkness (scales blend with night)",
-      "Mind reading — only if hatched under one full moon",
-      "Prophecy — only if hatched under one full moon",
-      "Both gifts — hatched under two full moons",
-      "Enhanced gifts — hatched under all three full moons",
+      "Powers (mind reading and/or foretelling) only awaken if hatched under moonlight — strength depends on how many moons were visible (see Three Moons page)",
     ],
     personality: ["Thoughtful", "Secretive", "Curious", "Brave"],
     history:

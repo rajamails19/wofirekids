@@ -137,7 +137,7 @@ function Home() {
             {[
               { n: "10", l: "Canon tribes" },
               { n: "2", l: "Continents" },
-              { n: "3", l: "Moons of fate" },
+              { n: "3", l: "Moons" },
             ].map((s) => (
               <div
                 key={s.l}
